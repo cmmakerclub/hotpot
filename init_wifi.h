@@ -1,4 +1,40 @@
 
+void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t lenght) {
+
+  switch (type) {
+    case WStype_DISCONNECTED:
+      Serial.printf("[%u] Disconnected!\n", num);
+      break;
+    case WStype_CONNECTED:
+      {
+        IPAddress ip = webSocket.remoteIP(num);
+        Serial.printf("[%u] Connected from %d.%d.%d.%d url: %s\n", num, ip[0], ip[1], ip[2], ip[3], payload);
+
+        // send message to client
+        webSocket.sendTXT(num, "Connected");
+      }
+      break;
+    case WStype_TEXT:
+      Serial.printf("[%u] get Text: %s\n", num, payload);
+
+      // send message to client
+      // webSocket.sendTXT(num, "message here");
+
+      // send data to all connected clients
+      // webSocket.broadcastTXT("message here");
+      break;
+    case WStype_BIN:
+      Serial.printf("[%u] get binary lenght: %u\n", num, lenght);
+      hexdump(payload, lenght);
+
+      // send message to client
+      // webSocket.sendBIN(num, payload, lenght);
+      break;
+  }
+
+}
+
+
 void init_wifi()
 {
   // use flash memory ssid & smartconfig
@@ -19,7 +55,8 @@ void init_wifi()
     Serial.println("WIFI CONECTED: ");
     // Print the IP address
     Serial.println(WiFi.localIP());
-    // Serial.println ((char*)message);
+    webSocket.begin();
+    webSocket.onEvent(webSocketEvent);
   });
 
   wifi->on_disconnected([&](const void* message)
@@ -30,7 +67,8 @@ void init_wifi()
 
   wifi->on_smartconfig_waiting([&](const void* message)
   {
-    Serial.println("ENTER SMARTCONFIG.");
+    Serial.println("WAITING FOR SMARTCONFIG.");
+    //    delay(500);
   });
 
   wifi->on_smartconfig_done([&](const void* message)
@@ -40,8 +78,9 @@ void init_wifi()
 
   wifi->on_smartconfig_processing([&](const void* message)
   {
-    // Serial.println("CONFIGURING WIFI..");
-    // delay(500);
+    Serial.print(millis());
+    Serial.println(" PROCESSING SMARTCONFIG...");
+    delay(100);
   });
 
 }

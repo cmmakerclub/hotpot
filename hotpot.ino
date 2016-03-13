@@ -4,9 +4,10 @@
 #include <ArduinoJson.h>
 #include <PubSubClient.h>
 #include <EEPROM.h>
-#include <WebSocketsClient.h>
+#include <WebSocketsServer.h>
 
-WebSocketsClient webSocket;
+WebSocketsServer webSocket = WebSocketsServer(81);
+
 MqttConnector *mqtt;
 WiFiConnector *wifi;
 
@@ -19,9 +20,6 @@ WiFiConnector *wifi;
 #define RELAY_01_MASK 0b0000001
 #define RELAY_02_MASK 0b0000010
 
-
-#define EEPROM_ADDR 0x00
-
 #define MQTT_PORT        1883
 #define PUBLISH_EVERY    1*1000 // every 15 seconds
 
@@ -29,7 +27,7 @@ WiFiConnector *wifi;
 #define MQTT_HOST "cmmc.xyz"
 //#define MQTT_USERNAME "GaBH7sxFDUEX0hl"
 //#define MQTT_PASSWORD "g6CtSEWUKwflkAyOEBE1IHF95ng="
-#define MQTT_CLIENT_ID "M9ZNSEMrDMjfVXo0"
+#define MQTT_CLIENT_ID "hotpot001"
 #define MQTT_PREFIX "/NatWeerawan/gearname"
 
 /* SENSOR INFO */
